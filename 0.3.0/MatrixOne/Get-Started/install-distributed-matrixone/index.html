@@ -1980,8 +1980,8 @@ addr-client = &quot;your_ip_address:20000&quot;
 client-urls = &quot;your_ip_address:40000&quot;
 peer-urls = &quot;your_ip_address:50000&quot;
 </code></pre></div>
-<strong>6.</strong> 将<code>storage-node</code>设置为<code>TRUE</code>，调度节点将存储集群的元数据信息：
-<div class="highlight"><pre><span></span><code>storage-node = true
+<strong>6.</strong> 将<code>prophet-node</code>设置为<code>TRUE</code>，调度节点将存储集群的元数据信息：
+<div class="highlight"><pre><span></span><code>prophet-node = true
 </code></pre></div>
 <strong>7.</strong> 设置<code>max-replicas</code>参数来指定每个<code>Shard</code>需要多少个副本，只能是<code>2*N+1</code>：
 <div class="highlight"><pre><span></span><code>max-replicas = 3
@@ -1995,11 +1995,11 @@ join = &quot;ip_address_of_store1&quot;
 <p>设置其他两个节点为纯存储节点（pure storage store），并重复步骤1与步骤2。有三个额外的参数需要指定：</p>
 <ul>
 <li>Set a unique number for nodeID. 按照nodeID设置相应的number</li>
-<li>将<code>storage-node</code>设置为TRUE`  </li>
+<li>将<code>prophet-node</code>设置为TRUE`  </li>
 <li>使用三个调度节点的三个<code>client-urls</code>参数来当作<code>external-etcd</code>参数：
 <div class="highlight"><pre><span></span><code>nodeID = 4/5;
-storage-node = false;
-storage-node = [&quot;ip_address_of_prophet_store1&quot;,&quot;ip_address_of_prophet_store2&quot;,&quot;ip_address_of_prophet_store3&quot;]
+prophet-node = false;
+prophet-node = [&quot;ip_address_of_prophet_store1&quot;,&quot;ip_address_of_prophet_store2&quot;,&quot;ip_address_of_prophet_store3&quot;]
 </code></pre></div></li>
 </ul>
 <h3 id="_4">相关信息</h3>

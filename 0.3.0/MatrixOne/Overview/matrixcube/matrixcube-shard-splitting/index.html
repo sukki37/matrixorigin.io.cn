@@ -1811,10 +1811,10 @@
 
 
 <h1 id="shard-splitting"><strong>Shard Splitting</strong></h1>
-<p><code>Shard</code>是数据的一个分区或分片。分布式系统通常将庞大的数据切割为碎片并将之存储集群内不同的机器上，以此增强整体的存储能力并处理更大的工作负载。每个<code>Shard</code>都会有几个<code>Replica</code>作为副本，来维持高可用性，而所有的<code>Replica</code>便组成了<code>Raft-Group</code>。<br />
-在MatrixCube的设计框架中，创建的新表是一个<code>Shard</code>。根据用户定义的容量限制参数，<code>Shard</code>有相应的大小限制。<br />
-随着表中数据量不断增加，它将超过<code>Shard</code>的容量限制。此时，将发生<code>Shard Splitting</code>，原始的<code>Shard</code>将被切割成两个<code>Shard</code>，每个<code>Shard</code>有一个相对相等的存储量。与此同时，该<code>Raft-Group</code>中其他所有<code>Replica</code>将以相同的行为分裂。原来的<code>Raft-Group</code>将被移除，代之以两个新的<code>Raft-Group</code>。<br />
-一旦两个新的<code>Raft-Groups</code>成立，将立即举行<code>re-election</code>操作。在大多数情况下，原始的<code>Replica</code>leader仍然会被选为leader。<br />
+<p><code>Shard</code>是数据的一个分区或分片。分布式系统通常将庞大的数据切割为碎片并将之存储集群内不同的机器上，以此增强整体的存储能力并承担更大的工作负载。每个<code>Shard</code>都会有几个<code>Replica</code>作为副本，来维持高可用性，而一组<code>Replica</code>便组成了<code>Raft-Group</code>。  </p>
+<p>在MatrixCube的设计框架中，创建的新表是一个<code>Shard</code>。根据用户定义的容量限制参数，<code>Shard</code>有相应的大小限制。<br />
+随着表中数据量不断增加，它将超过<code>Shard</code>的容量限制。此时，将发生<code>Shard Splitting</code>，原始的<code>Shard</code>将被切割成两个<code>Shard</code>，每个<code>Shard</code>有相对相等的存储量。与此同时，该<code>Raft-Group</code>中其他所有<code>Replica</code>将以相同的行为分裂。原来的<code>Raft-Group</code>将被移除，代之以两个新的<code>Raft-Group</code>。<br />
+一旦两个新的<code>Raft-Groups</code>成立，将立即举行<code>re-election</code>操作。在大多数情况下，原始的<code>Replica leader</code>仍然会被选为leader。<br />
 下面的图表可以形象地解释这一机制：
 <img alt="Shard Splitting" src="https://github.com/matrixorigin/artwork/blob/main/docs/overview/matrixcube-shard-splitting.svg?raw=true" /></p>
 

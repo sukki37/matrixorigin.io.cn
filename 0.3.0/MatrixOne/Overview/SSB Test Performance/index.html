@@ -1929,13 +1929,11 @@
 <h1 id="ssb"><strong>SSB测试性能</strong></h1>
 <h2 id="_1"><strong>概述</strong></h2>
 <p>在此，我们给出了使用MatrixOne在不同的硬件和查询条件下进行SSB测试的性能结果。<br />
-可参见<a href="../Get-Started/Tutorial/SSB test with- MatrixOne.md">SSB测试</a>来复现整个测试结果，如果未能实现类似结果，可能需要检查硬件、负载或或测试流程是否存在问题，可以在GitHub上提出<a href="https://github.com/matrixorigin/matrixone/issues/new/choose">issue</a>来报告具体问题。<br />
+可参见<a href="../../Get-Started/Tutorial/SSB-test-with-matrixone/">SSB测试</a>来复现整个测试结果，如果未能实现类似结果，可能需要检查硬件、负载或或测试流程是否存在问题，可以在GitHub上提出<a href="https://github.com/matrixorigin/matrixone/issues/new/choose">issue</a>来报告具体问题。<br />
 在v0.2.0中，MatrixOne在单表、多表查询方面均有优异的表现，我们将MatrixOne的性能测试结果与其他数据库产品进行了比较。通过柱状图，可以看出MatrixOne在查询处理时间上有明显的优势。</p>
 <p>推荐测试使用的服务器规格型号：x86 CPU，16核，64GB内存，CentOS 7+操作系统。</p>
-<div class="admonition note">
-<p class="admonition-title"><font size=4>note</font></p>
-<p><font size=3>以下测试结果均取三次最好结果的平均值，以秒为单位</font>  </p>
-</div>
+<p>!!! note  <font size=4>说明</font>
+    <font size=3>以下测试结果均取三次最好结果的平均值，以秒为单位</font>  </p>
 <p>为了展示单表查询能力，将五张表合成为一张宽表：<code>lineorder_flat</code>。</p>
 <h2 id="_2"><strong>单机单表</strong></h2>
 <p>使用单机搭载MatrixOne执行对宽表<code>lineorder_flat</code>的查询，并与相同配置下的其他数据库进行比较。

@@ -1887,32 +1887,33 @@
 <h1 id="auto-rebalance-scheduling"><strong>Auto-Rebalance &amp; Scheduling</strong></h1>
 <p>MatrixCube是一个实现分布式系统的框架。对于分布式系统来说，数据存储在多台机器上，而当集群中的计算机的数量发生变化时，例如集群扩展或计算机崩溃，都需要跨主机进行数据转移。  </p>
 <p><code>Prophet</code>是MatrixCube的自平衡和调度的关键组件。<code>Prophet</code>中嵌入了<code>Etcd Server</code>组件来存储集群的元数据。
-其主要实现了是三个目标：<br />
+其主要实现了三个目标：<br />
 * 保持每个<code>Store</code>存储量平衡。
 * 保持读写请求的负载平衡。
 * 保持逻辑表分布平衡。 </p>
 <p>为此，我们设计了<code>Heartbeat</code>和<code>Event Notify</code>机制来实现以上目标。每个<code>Store</code>和<code>Leader Replica</code>将向<code>Prophet</code>发送<code>heartbeat</code>信息，<code>Prophet</code>将根据该信息做出调度决策。因此，我们首先需要配置某些<code>Store</code>来承担<code>Prophet</code>的职责。</p>
 <h2 id="store-hearbeat"><strong>Store Hearbeat</strong></h2>
-<p>每个<code>Store</code>周期性地向<code>Prophet</code>发送<code>Heartbeat</code>，其中包括以下信息：
-中
-* 当前该<code>Store</code>存储的<code>Replica</code>的数量。
-* 当前该<code>Store</code>的存储空间，包括已使用空间与剩余空间。</p>
-<p><code>Prophet</code>收集所有的<code>Heartbeats</code>，然后 <code>Prophet</code>可以得到全局的<code>Replica</code>视图以及每个节点的存储空间。根据这些信息，<code>Prophet</code>将发送调度命令，将部分 <code>Replica</code>转移到合适的<code>Store</code>上, in order to balance the <code>Replica</code> numbers for each <code>Store</code>. Since each <code>Replica</code> of a <code>Shard</code> is the same size, the storage space is thus equalized.</p>
+<p>每个<code>Store</code>周期性地向<code>Prophet</code>发送<code>Heartbeat</code>，其中包括以下信息：</p>
+<ul>
+<li>当前该<code>Store</code>存储的<code>Replica</code>的数量。</li>
+<li>当前该<code>Store</code>的存储空间，包括已使用空间与剩余空间。</li>
+</ul>
+<p><code>Prophet</code>收集所有的<code>Heartbeat</code>，然后可以得到全局的<code>Replica</code>视图以及每个节点的存储空间信息。根据这些信息，<code>Prophet</code>将发送调度命令，将部分<code>Replica</code>转移到合适的<code>Store</code>上，以便保证每个<code>Store</code>上的<code>Replica</code>数目相近。由于每份<code>Replica</code>的数据量相同，因此<code>Shard</code>之间也能达到存储量的平衡。</p>
 <h2 id="replica-hearbeat"><strong>Replica Hearbeat</strong></h2>
-<p>分布式体系下每一个<code>Shard</code>在各个<code>Store</code>上有相应的<code>Replicas</code>（副本），这些<code>Replica</code>形成了一个<code>Raft-Group</code> 并且将选举Leader。Leader周期性地向<code>Prophet</code>发送<code>Heartbeat</code>，将包括一下信息：</p>
+<p>分布式体系下每一个<code>Shard</code>在各个<code>Store</code>上有相应的<code>Replicas</code>（副本），这些<code>Replica</code>形成了一个<code>Raft-Group</code>，并且将在组内选举Leader。Leader周期性地向<code>Prophet</code>发送<code>Heartbeat</code>，将包括一下信息：</p>
 <ul>
 <li>当前<code>Shard</code>所拥有的<code>Replica</code>数量，以及每个<code>Replica</code>的最新活跃时间。</li>
-<li>当前哪一个<code>Store</code>包含了<code>Leader Replica</code>。 </li>
+<li>当前<code>Leader Replica</code>所处的<code>Store</code>。 </li>
 </ul>
-<p><code>Prophet</code>收集所有<code>Hearbeat</code>然后构建一个全局的<code>Shard Replica</code>与<code>Replica Leader</code>视图。根据这些信息，<code>Prophet</code>会发出调度命令，一般情景如下：</p>
+<p><code>Prophet</code>收集所有<code>Hearbeat</code>然后构建一个全局的<code>Shard Replica</code>与<code>Replica Leader</code>视图。根据这些信息，<code>Prophet</code>会发出调度命令，如下：</p>
 <ul>
 <li><code>Add Replica</code>命令：如果<code>Shard Replica</code>的数目不足，将寻找合适的<code>Stores</code>并向其中添加<code>Replica</code>。</li>
 <li><code>Remove Replica</code>命令：如果<code>Shard Replica</code>的数目超过限制，则在合适的<code>Stores</code>上删除<code>Replica</code>。</li>
-<li><code>Move Replica</code>命令：如果<code>Shard Replica</code>数目分布不均匀，那么某些<code>Replicas</code>将被转移到相映<code>Store</code>上来保持平衡。</li>
+<li><code>Move Replica</code>命令：如果<code>Shard Replica</code>数目分布不均匀，那么某些<code>Replica</code>将被转移到相映<code>Store</code>上来保持平衡。</li>
 <li><code>Transfer Leader</code>命令: 如果<code>Leader</code>在集群中数目不平衡，那么某些<code>Leader</code>将被转移。</li>
 </ul>
 <h2 id="event-notify"><strong>Event Notify</strong></h2>
-<p>收集到的<code>Heartbeat</code>信息将被同步到所有<code>Stores</code>，从而每个<code>Store</code>中都能形成本地的全局路由信息。</p>
+<p>收集到的<code>Heartbeat</code>信息将被同步到所有<code>Store</code>，从而每个<code>Store</code>中都能在本地形成全局路由信息。</p>
 
               
             </article>

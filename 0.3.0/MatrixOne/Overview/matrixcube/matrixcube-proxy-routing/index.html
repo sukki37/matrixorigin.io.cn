@@ -1863,7 +1863,7 @@
 用户可以将该请求发送到系统里任意<code>Store</code>中，其中的<code>Shard Proxy</code>将处理该请求，它将通过全路由表<code>Global Routing</code> 来寻找到正确的<code>Store</code>。  </p>
 <p>正如我们对<code>Raft Group</code>与<code>Leader</code>的解释，<code>Leader</code> 代表了一个<code>Raft Group</code>，所有的读写操作只由它处理。因此，当我们执行对某些数据行的查询请求时： 
 * 首先，需要定位这些数据行所在的<code>Shard</code>。
-* 其次，找到这个<code>Shard</code>组中的<code>Leader Replica</code>。 
+* 其次，找到这个<code>Shard</code>所对应的<code>Raft Group</code>中的<code>Leader Replica</code>。 
 * 接着，将请求路由到<code>Leader Replica</code>所在的<code>Store</code>。
 * 最后，<code>Leader Replica</code>执行请求并作出响应。 </p>
 <h2 id="_1"><strong>示例</strong></h2>
